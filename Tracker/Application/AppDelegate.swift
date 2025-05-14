@@ -1,9 +1,3 @@
-//
-//  AppDelegate.swift
-//  Tracker
-//
-//  Created by Илья Ануфриев on 03.05.2025.
-//
 
 import UIKit
 
