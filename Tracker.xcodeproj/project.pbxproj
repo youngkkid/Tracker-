@@ -37,6 +37,7 @@
 		84DD5B192DD505C600EFCE0B /* SupplementaryEmojisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B182DD505C600EFCE0B /* SupplementaryEmojisView.swift */; };
 		84DD5B1B2DD5210100EFCE0B /* ColorsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B1A2DD5210100EFCE0B /* ColorsCollectionViewCell.swift */; };
 		84DD5B1D2DD5216F00EFCE0B /* SupplementaryColorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B1C2DD5216F00EFCE0B /* SupplementaryColorsView.swift */; };
+		84DD5B202DD5C74A00EFCE0B /* GeometricParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B1F2DD5C74A00EFCE0B /* GeometricParams.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +73,7 @@
 		84DD5B182DD505C600EFCE0B /* SupplementaryEmojisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryEmojisView.swift; sourceTree = "<group>"; };
 		84DD5B1A2DD5210100EFCE0B /* ColorsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorsCollectionViewCell.swift; sourceTree = "<group>"; };
 		84DD5B1C2DD5216F00EFCE0B /* SupplementaryColorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryColorsView.swift; sourceTree = "<group>"; };
+		84DD5B1F2DD5C74A00EFCE0B /* GeometricParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometricParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 		849015162DC5EB4100164C07 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				84DD5B1E2DD5C73D00EFCE0B /* Helpers */,
 				84DD5AE02DC73F3600EFCE0B /* TabBarController.swift */,
 				84DD5B0F2DD34CE100EFCE0B /* Services */,
 				84DD5B0E2DD34CB700EFCE0B /* StatisticViewController */,
@@ -227,6 +230,14 @@
 			path = "Protocols ";
 			sourceTree = "<group>";
 		};
+		84DD5B1E2DD5C73D00EFCE0B /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				84DD5B1F2DD5C74A00EFCE0B /* GeometricParams.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -308,6 +319,7 @@
 				84DD5B042DD0CC6E00EFCE0B /* AddCategoryViewController.swift in Sources */,
 				84DD5AE32DC7423400EFCE0B /* TrackerViewController.swift in Sources */,
 				8490151C2DC5EB4100164C07 /* StatisticViewController.swift in Sources */,
+				84DD5B202DD5C74A00EFCE0B /* GeometricParams.swift in Sources */,
 				84DD5AF22DC9DAAB00EFCE0B /* TrackerCell.swift in Sources */,
 				84DD5AF42DC9E21D00EFCE0B /* SupplementaryView.swift in Sources */,
 				84DD5B142DD39BDA00EFCE0B /* AddCategoryViewControllerDelegate.swift in Sources */,
@@ -394,7 +406,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -451,7 +463,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -474,7 +486,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -501,7 +513,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
