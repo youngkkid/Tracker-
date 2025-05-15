@@ -20,8 +20,8 @@ final class HabitOrEventViewController: UIViewController {
     private var selectedDays: [DayOfWeek] = []
     private var selectedCategories: [String] = []
     private let dataManager = DataManager.shared
-    private let randomEmojis = ["🌟", "🎉", "🐱", "🚀", "🍕", "🌈", "🐶", "📚", "⚽️", "🎧"]
-    private let randomColors: [UIColor] = [.color1, .color2, .color3, .color4, .color5, .color6, .color7, .color8, .color9, .color10, .color11, .color12, .color13, .color14, .color15, .color16, .color17, .color18]
+    private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
+    private let colors: [UIColor] = [.color1, .color2, .color3, .color4, .color5, .color6, .color7, .color8, .color9, .color10, .color11, .color12, .color13, .color14, .color15, .color16, .color17, .color18]
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -82,6 +82,35 @@ final class HabitOrEventViewController: UIViewController {
                            forCellReuseIdentifier: HabitOrEventScheduleCell.habitScheduleCellIdentifier)
         tableView.bounces = false
         return tableView
+    }()
+    
+    private lazy var emojisCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(EmojisCollectionViewCell.self,
+                                forCellWithReuseIdentifier: EmojisCollectionViewCell.emojisCollectionViewCellIdentifier)
+        collectionView.register(SupplementaryEmojisView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                withReuseIdentifier: "header")
+        collectionView.tag = 1
+        collectionView.isScrollEnabled = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        return collectionView
+        
+    }()
+    
+    private lazy var colorsCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(ColorsCollectionViewCell.self,
+                                forCellWithReuseIdentifier: ColorsCollectionViewCell.ColorsCollectionViewCellIdentifier)
+        collectionView.register(SupplementaryColorsView.superclass(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
+        collectionView.tag = 2
+        collectionView.isScrollEnabled = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        return collectionView
     }()
     
     private lazy var cancelButton: UIButton = {
@@ -194,6 +223,98 @@ final class HabitOrEventViewController: UIViewController {
             titleLabel.text = "Нерегулярное событие"
         }
         tableView.reloadData()
+    }
+}
+
+extension HabitOrEventViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionView.tag {
+        case 1:
+            return emojis.count
+        case 2:
+            return colors.count
+        default:
+            return 0
+        }
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        switch collectionView.tag {
+        case 1:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojisCollectionViewCell.emojisCollectionViewCellIdentifier, for: indexPath) as? EmojisCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.updateEmojiLabel(emoji: emojis[indexPath.row])
+            return cell
+        case 2:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorsCollectionViewCell.ColorsCollectionViewCellIdentifier, for: indexPath) as? ColorsCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.updateColor(color: colors[indexPath.row])
+            return cell
+        default:
+            return UICollectionViewCell()
+            
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 24, left: 18, bottom: 30, right: 18)
+        // потом нужно добавить массив Params в отдельный файл
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var id: String
+        
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            id = "header"
+        default:
+            id = ""
+        }
+        
+        switch collectionView.tag {
+        case 1:
+            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                             withReuseIdentifier: id,
+                                                                             for: indexPath) as? SupplementaryEmojisView else {
+                return UICollectionReusableView()
+            }
+            view.updateTitleLabel(title: "Emoji")
+            return view
+        case 2:
+            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                             withReuseIdentifier: id,
+                                                                             for: indexPath) as? SupplementaryColorsView else {
+                return UICollectionReusableView()
+            }
+            view.updateTitleLabel(text: "Цвет")
+            return view
+        default:
+            return UICollectionReusableView()
+        }
+    }
+}
+
+extension HabitOrEventViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let indexPath = IndexPath(row: 0, section: section)
+        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
+        
+        return headerView.systemLayoutSizeFitting(CGSize(width: collectionView.frame.width, height: collectionView.frame.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let availableWidth = collectionView.frame.width -
+        // ЗДЕСЬ ОПЯТЬ ЖЕ НУЖНЫ PARAMS (А ИМЕННО PADDINGWIDTH)
     }
 }
 

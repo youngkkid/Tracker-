@@ -33,6 +33,10 @@
 		84DD5B0C2DD0E49E00EFCE0B /* ScheduleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B0B2DD0E49E00EFCE0B /* ScheduleCell.swift */; };
 		84DD5B122DD39BB700EFCE0B /* ScheduleViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B112DD39BB700EFCE0B /* ScheduleViewCellDelegate.swift */; };
 		84DD5B142DD39BDA00EFCE0B /* AddCategoryViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B132DD39BDA00EFCE0B /* AddCategoryViewControllerDelegate.swift */; };
+		84DD5B172DD5030200EFCE0B /* EmojisCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B162DD5030200EFCE0B /* EmojisCollectionViewCell.swift */; };
+		84DD5B192DD505C600EFCE0B /* SupplementaryEmojisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B182DD505C600EFCE0B /* SupplementaryEmojisView.swift */; };
+		84DD5B1B2DD5210100EFCE0B /* ColorsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B1A2DD5210100EFCE0B /* ColorsCollectionViewCell.swift */; };
+		84DD5B1D2DD5216F00EFCE0B /* SupplementaryColorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5B1C2DD5216F00EFCE0B /* SupplementaryColorsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +68,10 @@
 		84DD5B0B2DD0E49E00EFCE0B /* ScheduleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleCell.swift; sourceTree = "<group>"; };
 		84DD5B112DD39BB700EFCE0B /* ScheduleViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewCellDelegate.swift; sourceTree = "<group>"; };
 		84DD5B132DD39BDA00EFCE0B /* AddCategoryViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewControllerDelegate.swift; sourceTree = "<group>"; };
+		84DD5B162DD5030200EFCE0B /* EmojisCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojisCollectionViewCell.swift; sourceTree = "<group>"; };
+		84DD5B182DD505C600EFCE0B /* SupplementaryEmojisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryEmojisView.swift; sourceTree = "<group>"; };
+		84DD5B1A2DD5210100EFCE0B /* ColorsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorsCollectionViewCell.swift; sourceTree = "<group>"; };
+		84DD5B1C2DD5216F00EFCE0B /* SupplementaryColorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryColorsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +160,10 @@
 				84DD5AFA2DCF24C800EFCE0B /* HabitOrEventViewController.swift */,
 				84DD5AFD2DD0B8B600EFCE0B /* HabitOrEventCategoryCell.swift */,
 				84DD5AFF2DD0BBAF00EFCE0B /* HabitOrEventScheduleCell.swift */,
+				84DD5B162DD5030200EFCE0B /* EmojisCollectionViewCell.swift */,
+				84DD5B182DD505C600EFCE0B /* SupplementaryEmojisView.swift */,
+				84DD5B1A2DD5210100EFCE0B /* ColorsCollectionViewCell.swift */,
+				84DD5B1C2DD5216F00EFCE0B /* SupplementaryColorsView.swift */,
 				84DD5B022DD0CC3F00EFCE0B /* CategoryViewController */,
 				84DD5B012DD0CC3C00EFCE0B /* ScheduleViewController */,
 			);
@@ -288,9 +300,11 @@
 				84DD5AF82DCF219100EFCE0B /* CreatingTrackerViewController.swift in Sources */,
 				84DD5AE82DC9D5DF00EFCE0B /* Tracker.swift in Sources */,
 				84DD5AFE2DD0B8B600EFCE0B /* HabitOrEventCategoryCell.swift in Sources */,
+				84DD5B192DD505C600EFCE0B /* SupplementaryEmojisView.swift in Sources */,
 				84DD5B062DD0D0ED00EFCE0B /* CategoryViewController.swift in Sources */,
 				84DD5AEC2DC9D5FA00EFCE0B /* TrackerRecord.swift in Sources */,
 				84DD5AF02DC9D61300EFCE0B /* TrackerType.swift in Sources */,
+				84DD5B1B2DD5210100EFCE0B /* ColorsCollectionViewCell.swift in Sources */,
 				84DD5B042DD0CC6E00EFCE0B /* AddCategoryViewController.swift in Sources */,
 				84DD5AE32DC7423400EFCE0B /* TrackerViewController.swift in Sources */,
 				8490151C2DC5EB4100164C07 /* StatisticViewController.swift in Sources */,
@@ -301,12 +315,14 @@
 				84DD5B0A2DD0DEAC00EFCE0B /* ScheduleViewController.swift in Sources */,
 				84DD5AFB2DCF24C800EFCE0B /* HabitOrEventViewController.swift in Sources */,
 				849015182DC5EB4100164C07 /* AppDelegate.swift in Sources */,
+				84DD5B1D2DD5216F00EFCE0B /* SupplementaryColorsView.swift in Sources */,
 				84DD5B002DD0BBAF00EFCE0B /* HabitOrEventScheduleCell.swift in Sources */,
 				8490151A2DC5EB4100164C07 /* SceneDelegate.swift in Sources */,
 				84DD5AEE2DC9D60400EFCE0B /* DayOfWeek.swift in Sources */,
 				84DD5AF62DCB829600EFCE0B /* DataManager.swift in Sources */,
 				84DD5AEA2DC9D5ED00EFCE0B /* TrackerCategory.swift in Sources */,
 				84DD5B0C2DD0E49E00EFCE0B /* ScheduleCell.swift in Sources */,
+				84DD5B172DD5030200EFCE0B /* EmojisCollectionViewCell.swift in Sources */,
 				84DD5B082DD0D76200EFCE0B /* CategoryCell.swift in Sources */,
 				84DD5B122DD39BB700EFCE0B /* ScheduleViewCellDelegate.swift in Sources */,
 			);
