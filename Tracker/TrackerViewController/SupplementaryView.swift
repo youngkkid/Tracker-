@@ -2,7 +2,6 @@
 import UIKit
 
 final class SupplementaryView: UICollectionReusableView {
-    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 19)

@@ -165,7 +165,8 @@ final class HabitOrEventViewController: UIViewController {
     }
     
     @objc private func didTapCreateButton() {
-        guard let window = UIApplication.shared.windows.first else {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
             assertionFailure("Invalid window configuration")
             return
         }
