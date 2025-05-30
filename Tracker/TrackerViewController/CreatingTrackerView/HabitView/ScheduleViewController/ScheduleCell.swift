@@ -1,4 +1,3 @@
-
 import UIKit
 
 protocol ScheduleViewCellDelegate: AnyObject {
@@ -16,6 +15,15 @@ final class ScheduleCell: UITableViewCell {
     var dayOfWeek: DayOfWeek? {
         didSet {
             titleLabel.text = dayOfWeek?.russianName
+        }
+    }
+    
+    var isSwitchOn: Bool {
+        get {
+            return switchControl.isOn
+        }
+        set {
+            switchControl.isOn = newValue
         }
     }
     

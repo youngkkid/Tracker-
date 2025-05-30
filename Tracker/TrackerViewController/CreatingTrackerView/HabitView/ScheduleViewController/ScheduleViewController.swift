@@ -1,10 +1,3 @@
-//
-//  ScheduleViewController.swift
-//  Tracker
-//
-//  Created by Илья Ануфриев on 11.05.2025.
-//
-
 import UIKit
 
 protocol ScheduleViewControllerDelegate: AnyObject {
@@ -53,9 +46,21 @@ final class ScheduleViewController: UIViewController {
         button.setTitle("Готово", for: .normal)
         button.layer.cornerRadius = UIConstants.doneButtonCornerRadius
         button.layer.masksToBounds = true
-        button.addTarget(self, action: #selector(backToHabitViewController), for: .touchUpInside)
+        button.addTarget(self,
+                         action: #selector(backToHabitViewController),
+                         for: .touchUpInside)
         return button
     }()
+    
+    init(delegate: ScheduleViewControllerDelegate? = nil, selectedDays: [DayOfWeek]) {
+        self.delegate = delegate
+        self.selectedDays = selectedDays
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,62 +79,25 @@ extension ScheduleViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.row {
-        case 0:
-            return configureFirstCell(for: indexPath, in: tableView)
-        case 6:
-            return configureLastCell(for: indexPath, in: tableView)
-        default:
-            return configureDefaultCell(for: indexPath, in: tableView)
-            
-        }
-    }
-    
-    private func configureFirstCell(for indexPath: IndexPath, in tableView: UITableView) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.scheduleCellIdentifier, for: indexPath) as? ScheduleCell else {
             return UITableViewCell()
         }
         cell.layer.cornerRadius = UIConstants.firstCellCornerRadius
         cell.layer.masksToBounds = true
-        cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        cell.delegate = self
-        let dayOfWeek = DayOfWeek.allCases[indexPath.row]
-        cell.dayOfWeek = dayOfWeek
-        cell.separatorInset = UIEdgeInsets(top: 0,
-                                           left: 16,
-                                           bottom: 0,
-                                           right: 16)
-        return cell
-    }
-    
-    private func configureLastCell(for indexPath: IndexPath, in tableView: UITableView) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.scheduleCellIdentifier, for: indexPath) as? ScheduleCell else {
-            return UITableViewCell()
+        
+        if indexPath.row == 0 {
+            cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        } else if indexPath.row == DayOfWeek.allCases.count - 1 {
+            cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        } else {
+            cell.layer.maskedCorners = []
         }
-        cell.layer.cornerRadius = UIConstants.lastCellCornerRadius
-        cell.layer.masksToBounds = true
-        cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
         cell.delegate = self
         let dayOfWeek = DayOfWeek.allCases[indexPath.row]
         cell.dayOfWeek = dayOfWeek
-        cell.separatorInset = UIEdgeInsets(top: 0,
-                                           left: .greatestFiniteMagnitude,
-                                           bottom: 0,
-                                           right: 16)
-        return cell
-    }
-    
-    private func configureDefaultCell(for indexPath: IndexPath, in tableView: UITableView) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.scheduleCellIdentifier, for: indexPath) as? ScheduleCell else {
-            return UITableViewCell()
-        }
-        cell.delegate = self
-        let dayOfWeek = DayOfWeek.allCases[indexPath.row]
-        cell.dayOfWeek = dayOfWeek
-        cell.separatorInset = UIEdgeInsets(top: 0,
-                                           left: 16,
-                                           bottom: 0,
-                                           right: 16)
+        cell.isSwitchOn = selectedDays.contains(dayOfWeek)
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         return cell
     }
 }

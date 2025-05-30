@@ -1,4 +1,3 @@
-
 import UIKit
 
 final class CategoryCell: UITableViewCell {
@@ -42,7 +41,7 @@ final class CategoryCell: UITableViewCell {
 extension CategoryCell {
     private func initialize() {
         accessoryType = .none
-        backgroundColor = .ypLightGray
+        contentView.backgroundColor = .ypLightGray
         
         [titleLabel,
          checkMarkImageView].forEach {

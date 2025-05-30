@@ -1,4 +1,3 @@
-
 import UIKit
 
 final class ColorsCollectionViewCell: UICollectionViewCell {
@@ -19,7 +18,7 @@ final class ColorsCollectionViewCell: UICollectionViewCell {
     
     private lazy var colorsSelectedImageFrame: UIImageView = {
         let image = UIImageView()
-        image.image = .colorSelectedFrame
+        image.image = .colorSelectedFrame.withRenderingMode(.alwaysTemplate)
         image.isHidden = true
         return image
     }()

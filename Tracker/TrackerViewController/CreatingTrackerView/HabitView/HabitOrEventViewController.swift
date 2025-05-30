@@ -1,4 +1,3 @@
-
 import UIKit
 
 final class HabitOrEventViewController: UIViewController {
@@ -20,7 +19,7 @@ final class HabitOrEventViewController: UIViewController {
     private var tableViewTopConstraint: NSLayoutConstraint?
     
     private var selectedDays: [DayOfWeek] = []
-    private var selectedCategories: [String] = []
+    private var selectedCategory: TrackerCategory?
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
     private let dataManager = DataManager.shared
@@ -37,6 +36,17 @@ final class HabitOrEventViewController: UIViewController {
     
     private let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"]
     private let colors: [UIColor] = [.color1, .color2, .color3, .color4, .color5, .color6, .color7, .color8, .color9, .color10, .color11, .color12, .color13, .color14, .color15, .color16, .color17, .color18]
+    
+    private lazy var trackerDataProvider: TrackerDataProviderProtocol? = {
+        let trackerDataStore = TrackerStore()
+        do {
+            try trackerDataProvider =  TrackerDataProvider(trackerStore: trackerDataStore, delegate: self)
+            return trackerDataProvider
+        } catch {
+            print("Data is unavailable")
+            return nil
+        }
+    }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -106,7 +116,7 @@ final class HabitOrEventViewController: UIViewController {
                                 forCellWithReuseIdentifier: EmojisCollectionViewCell.emojisCollectionViewCellIdentifier)
         collectionView.register(SupplementaryEmojisView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                                withReuseIdentifier: "header")
+                                withReuseIdentifier: "emojisHeader")
         collectionView.tag = 1
         collectionView.isScrollEnabled = false
         collectionView.delegate = self
@@ -131,7 +141,7 @@ final class HabitOrEventViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(ColorsCollectionViewCell.self,
                                 forCellWithReuseIdentifier: ColorsCollectionViewCell.ColorsCollectionViewCellIdentifier)
-        collectionView.register(SupplementaryColorsView.superclass(), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
+        collectionView.register(SupplementaryColorsView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "colorsHeader")
         collectionView.tag = 2
         collectionView.isScrollEnabled = false
         collectionView.delegate = self
@@ -175,17 +185,13 @@ final class HabitOrEventViewController: UIViewController {
     
     private func updateCreateButtonAvailability() {
         let textIsValid = textField.text?.isEmpty == false
-        let categoriesAreSelected = !selectedCategories.isEmpty
+        let categoriesAreSelected = selectedCategory != nil && !(selectedCategory!.title.isEmpty)
         let daysAreSelected = !selectedDays.isEmpty
         let emojiIsSelected = selectedEmoji != nil
         let colorIsSelected = selectedColor != nil
         let shouldEnableButton: Bool
         
-        if isHabit {
-            shouldEnableButton = textIsValid && categoriesAreSelected && daysAreSelected && emojiIsSelected && colorIsSelected
-        } else {
-            shouldEnableButton = textIsValid && categoriesAreSelected && emojiIsSelected && colorIsSelected
-        }
+        shouldEnableButton = textIsValid && categoriesAreSelected && emojiIsSelected && colorIsSelected && (!isHabit || daysAreSelected)
         
         createButton.isEnabled = shouldEnableButton
         createButton.backgroundColor = shouldEnableButton ? .ypBlack : .ypGray
@@ -195,8 +201,6 @@ final class HabitOrEventViewController: UIViewController {
         let name = textField.text ?? ""
         let id = UUID()
         let today = Date()
-        let color = selectedColor ?? UIColor(white: 1, alpha: 1)
-        let emoji = selectedEmoji ?? ""
         var schedule: [DayOfWeek] = []
         
         if isHabit {
@@ -212,12 +216,20 @@ final class HabitOrEventViewController: UIViewController {
                 schedule.append(selectedDayOfWeek)
             }
         }
-        let type: TrackerType = isHabit ? .habit : .irregularEvent
         
-        return Tracker(id: id, name: name, color: color, emoji: emoji, schedule: schedule, type: type)
+        let isHabit = isHabit ? true : false
+        
+        return Tracker(id: id,
+                       name: name,
+                       color: selectedColor ?? UIColor(white: 1, alpha: 1),
+                       emoji: selectedEmoji ?? "",
+                       schedule: schedule,
+                       isHabit: isHabit)
     }
     
     @objc private func didTapCancelButton() {
+        selectedDays.removeAll()
+        selectedEmoji = nil
         dismiss(animated: true)
     }
     
@@ -228,9 +240,14 @@ final class HabitOrEventViewController: UIViewController {
             return
         }
         
-        let tracker = makeTracker()
-        for category in selectedCategories {
-            dataManager.add(category: TrackerCategory(title: category, trackers: [tracker]))
+        if let category = selectedCategory {
+            do {
+                try trackerDataProvider?.addTracker(makeTracker(),
+                                                    for: category)
+                print(category.trackers)
+            } catch {
+                print("Failed to create a tracker for the category: \(category)")
+            }
         }
         
         let tabBarController = TabBarController()
@@ -246,11 +263,7 @@ final class HabitOrEventViewController: UIViewController {
     }
     
     private func chooseHabitOrIrregularEvent() {
-        if isHabit {
-            titleLabel.text = "Новая привычка"
-        } else {
-            titleLabel.text = "Нерегулярное событие"
-        }
+        titleLabel.text = isHabit ? "Новая привычка" : "Нерегулярное событие"
         tableView.reloadData()
     }
     
@@ -306,27 +319,21 @@ extension HabitOrEventViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        var id: String
-        
-        switch kind {
-        case UICollectionView.elementKindSectionHeader:
-            id = "header"
-        default:
-            id = ""
-        }
         
         switch collectionView.tag {
         case 1:
-            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                             withReuseIdentifier: id,
+            guard kind == UICollectionView.elementKindSectionHeader,
+                  let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                             withReuseIdentifier: "emojisHeader",
                                                                              for: indexPath) as? SupplementaryEmojisView else {
                 return UICollectionReusableView()
             }
             view.updateTitleLabel(title: "Emoji")
             return view
         case 2:
-            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                             withReuseIdentifier: id,
+            guard kind == UICollectionView.elementKindSectionHeader,
+                  let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                             withReuseIdentifier: "colorsHeader",
                                                                              for: indexPath) as? SupplementaryColorsView else {
                 return UICollectionReusableView()
             }
@@ -340,10 +347,7 @@ extension HabitOrEventViewController: UICollectionViewDataSource {
 
 extension HabitOrEventViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let indexPath = IndexPath(row: 0, section: section)
-        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
-        
-        return headerView.systemLayoutSizeFitting(CGSize(width: collectionView.frame.width, height: collectionView.frame.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        CGSize(width: collectionView.frame.width, height: 18)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -364,14 +368,14 @@ extension HabitOrEventViewController: UICollectionViewDelegate {
         case 1:
             let selectedEmoji = emojis[indexPath.row]
             if let cell = emojisCollectionView.cellForItem(at: indexPath) as? EmojisCollectionViewCell {
-                cell.updateEmojiBackgroundColor(color: .ypLightGray) // добавить цвет .ypGraySelectedEmoji
+                cell.updateEmojiBackgroundColor(color: .ypLightGray)
             }
             self.selectedEmoji = selectedEmoji
             updateCreateButtonAvailability()
         case 2:
             let selectedColor = colors[indexPath.row]
             if let cell = colorsCollectionView.cellForItem(at: indexPath) as? ColorsCollectionViewCell {
-                cell.updateColorFrame(color: .ypLightGray, isHidden: false) // также добавить цвет
+                cell.updateColorFrame(color: selectedColor, isHidden: false)
             }
             self.selectedColor = selectedColor
             updateCreateButtonAvailability()
@@ -410,15 +414,11 @@ extension HabitOrEventViewController: UITextFieldDelegate {
         
         let maxLength = 38
         
-        if newText.count <= maxLength {
-            signsLimitLabel.isHidden = true
-            tableViewTopConstraint?.constant = 24
-            return true
-        } else {
-            signsLimitLabel.isHidden = false
-            tableViewTopConstraint?.constant = 48
-            return false
-        }
+        let isValid = newText.count <= maxLength
+        signsLimitLabel.isHidden = isValid
+        tableViewTopConstraint?.constant = isValid ? 24 : 48
+        updateCreateButtonAvailability()
+        return isValid
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -432,11 +432,11 @@ extension HabitOrEventViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath ) {
         switch indexPath.row {
         case 0:
-            let categoryViewController = CategoryViewController()
+            let categoryViewController = CategoryViewController(delegate: self, selectedCategory: selectedCategory)
             categoryViewController.delegate = self
             present(categoryViewController, animated: true)
         default:
-            let scheduleViewController = ScheduleViewController()
+            let scheduleViewController = ScheduleViewController(delegate: self, selectedDays: selectedDays)
             scheduleViewController.delegate = self
             present(scheduleViewController, animated: true)
         }
@@ -473,7 +473,7 @@ extension HabitOrEventViewController: UITableViewDataSource {
         configureSeparator(for: cell, isLastCell: isLastCell)
         configureCornerRadius(for: cell, indexPath: indexPath)
         
-        let selectedCategoriesString = selectedCategories.joined(separator: ", ")
+        let selectedCategoriesString = selectedCategory?.title ?? ""
         cell.changeCategoriesLabel(categories: selectedCategoriesString)
         return cell
     }
@@ -543,10 +543,8 @@ extension HabitOrEventViewController: UITableViewDataSource {
 }
 
 extension HabitOrEventViewController: CategoryViewControllerDelegate {
-    func didSelect(categories: [String]) {
-        for category in categories {
-            selectedCategories.append(category)
-        }
+    func didSelect(category: TrackerCategory?) {
+        selectedCategory = category
         tableView.reloadData()
         updateCreateButtonAvailability()
     }
@@ -557,6 +555,12 @@ extension HabitOrEventViewController: ScheduleViewControllerDelegate{
         selectedDays = days
         tableView.reloadData()
         updateCreateButtonAvailability()
+    }
+}
+
+extension HabitOrEventViewController: TrackerDataProviderDelegate {
+    func didUpdate(_ update: TrackerStoreUpdate) {
+        
     }
 }
 
