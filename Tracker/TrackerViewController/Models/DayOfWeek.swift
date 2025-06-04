@@ -1,20 +1,13 @@
-//
-//  DayOfWee.swift
-//  Tracker
-//
-//  Created by Илья Ануфриев on 06.05.2025.
-//
-
 import Foundation
 
-enum DayOfWeek: Int, CaseIterable {
-    case monday = 2
-    case tuesday = 3
-    case wednesday = 4
-    case thursday = 5
-    case friday = 6
-    case saturday = 7
-    case sunday = 1
+enum DayOfWeek: Int, CaseIterable, Codable {
+    case monday = 1
+    case tuesday = 2
+    case wednesday = 3
+    case thursday = 4
+    case friday = 5
+    case saturday = 6
+    case sunday = 7
     
     var russianName: String {
         switch self {

@@ -1,13 +1,7 @@
-
 import UIKit
 
-protocol TrackerCellDelegate: AnyObject {
-    func completeTracker(id: UUID, at indexPath: IndexPath)
-    func uncompletedTracker(id: UUID, at indexPath: IndexPath)
-}
-
 final class TrackerCell: UICollectionViewCell {
-
+    
     private enum UIConstants {
         static let trackerCardViewCornerRadius: CGFloat = 16
         static let emojiLabelCornerRadius: CGFloat = 12
@@ -20,7 +14,7 @@ final class TrackerCell: UICollectionViewCell {
     static let collectionCellIdentifier = "CollectionCell"
     
     weak var delegate: TrackerCellDelegate?
-  
+    
     private var isCompletedToday: Bool = false
     private var trackerId: UUID?
     private var indexPath: IndexPath?
@@ -64,7 +58,7 @@ final class TrackerCell: UICollectionViewCell {
         button.addTarget(self, action: #selector(didTapTrackerDoneButton), for: .touchUpInside)
         return button
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initialize()
@@ -73,7 +67,7 @@ final class TrackerCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     func configure(with tracker: Tracker, isCompletedToday: Bool, completedDays: Int, at indexPath: IndexPath) {
         trackerCardLabel.text = tracker.name
         trackerCardView.backgroundColor = tracker.color

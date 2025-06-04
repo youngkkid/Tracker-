@@ -1,6 +1,6 @@
-
 import Foundation
 
 protocol AddCategoryViewControllerDelegate: AnyObject {
-    func addCategory(nameOfCategory: String)
+    func add(category: TrackerCategory)
+    func update(_ category: TrackerCategory, with newTitle: String)
 }
