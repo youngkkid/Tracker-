@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 import CoreData
 
 final class CoreDataManager {
@@ -9,7 +9,7 @@ final class CoreDataManager {
         let container = NSPersistentContainer(name: "Tracker")
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                assertionFailure("Unresolved error \(error), \(error.userInfo)")
             }
         })
         return container
@@ -25,7 +25,7 @@ final class CoreDataManager {
             } catch {
                 context.rollback()
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                assertionFailure("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }

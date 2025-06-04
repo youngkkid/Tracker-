@@ -217,8 +217,6 @@ final class HabitOrEventViewController: UIViewController {
             }
         }
         
-        let isHabit = isHabit ? true : false
-        
         return Tracker(id: id,
                        name: name,
                        color: selectedColor ?? UIColor(white: 1, alpha: 1),

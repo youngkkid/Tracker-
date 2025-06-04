@@ -7,7 +7,7 @@ final class EmojisCollectionViewCell: UICollectionViewCell {
         static let emojiLabelCornerRadius: CGFloat = 16
     }
     
-    static let emojisCollectionViewCellIdentifier = "EmojisColletcionViewCell"
+    static let emojisCollectionViewCellIdentifier = "EmojisCollectionViewCell"
     
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
@@ -45,9 +45,9 @@ extension EmojisCollectionViewCell {
         
         NSLayoutConstraint.activate([
             emojiLabel.heightAnchor.constraint(equalToConstant: frame.width),
-                    emojiLabel.widthAnchor.constraint(equalToConstant: frame.width),
-                    emojiLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                    emojiLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            emojiLabel.widthAnchor.constraint(equalToConstant: frame.width),
+            emojiLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            emojiLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 }

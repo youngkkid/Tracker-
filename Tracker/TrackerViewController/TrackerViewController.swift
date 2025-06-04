@@ -187,7 +187,7 @@ final class TrackerViewController: UIViewController {
                 let textCondition = filterText.isEmpty || tracker.name.lowercased().contains(filterText)
                 var dateCondition = false
                 
-                if tracker.isHabit == true {
+                if tracker.isHabit {
                     let filterWeekDay = calendar.component(.weekday, from: currentDate)
                     dateCondition = tracker.schedule.contains { dayOfWeek in
                         let dayOfWeekIndex = dayOfWeek.rawValue
