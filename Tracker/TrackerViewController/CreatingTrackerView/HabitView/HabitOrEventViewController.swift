@@ -430,7 +430,8 @@ extension HabitOrEventViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath ) {
         switch indexPath.row {
         case 0:
-            let categoryViewController = CategoryViewController(delegate: self, selectedCategory: selectedCategory)
+            let viewModel = CategoryViewModel()
+            let categoryViewController = CategoryViewController(delegate: self, selectedCategory: selectedCategory, viewModel: viewModel  )
             categoryViewController.delegate = self
             present(categoryViewController, animated: true)
         default:

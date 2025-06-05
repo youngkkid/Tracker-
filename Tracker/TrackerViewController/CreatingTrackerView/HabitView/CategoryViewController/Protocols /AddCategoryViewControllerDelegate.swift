@@ -1,5 +1,6 @@
 import Foundation
 
-protocol CategoryViewControllerDelegate: AnyObject {
-    func didSelect(category: TrackerCategory?)
+protocol AddCategoryViewControllerDelegate: NSObject {
+    func add(category: TrackerCategory)
+    func update(_ category: TrackerCategory, with newTitle: String)
 }
