@@ -6,23 +6,19 @@ enum OnboardingPage: CaseIterable {
     
     var text: String {
         switch self {
-        case .first:
-            return "Отслеживайте только то, что хотите"
-        case  .second:
-            return "Даже если это \nне литры воды и йога"
+        case .first: "Отслеживайте только то, что хотите"
+        case  .second: "Даже если это \nне литры воды и йога"
         }
     }
     
     var buttonText: String {
-        return "Вот это технологии!"
+        "Вот это технологии!"
     }
     
     var image: UIImage {
         switch self {
-        case .first:
-            return .firstOnboarding
-        case .second:
-            return .secondOnboarding
+        case .first: .firstOnboarding
+        case .second: .secondOnboarding
         }
     }
 }
