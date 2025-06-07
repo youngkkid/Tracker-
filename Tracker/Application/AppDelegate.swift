@@ -1,7 +1,7 @@
 import UIKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
@@ -16,10 +16,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         configuration.storyboard = nil
         return configuration
     }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-    }
-
-
 }
 

@@ -13,23 +13,15 @@ final class CategoryViewController: UIViewController {
     weak var delegate: CategoryViewControllerDelegate?
     
     private var selectedCategory: TrackerCategory? = nil
-    private var selectedIndexPath: IndexPath?
+    private var viewModel: CategoryViewModelProtocol
     
-    private lazy var trackerCategoryDataProvider: TrackerCategoryDataProviderProtocol? = {
-        let trackerCategoryDataStore = TrackerCategoryStore()
-        do {
-            try trackerCategoryDataProvider = TrackerCategoryDataProvider(trackerCategoryStore: trackerCategoryDataStore, delegate: self)
-            return trackerCategoryDataProvider
-        } catch {
-            presentAlertController(with: "Ошибка", message: "Не удалось инициализировать данные категории")
-            return nil
-        }
-    }()
     
-    init(delegate: CategoryViewControllerDelegate? = nil, selectedCategory: TrackerCategory? = nil) {
+    init(delegate: CategoryViewControllerDelegate? = nil, selectedCategory: TrackerCategory? = nil, viewModel: CategoryViewModelProtocol) {
         self.delegate = delegate
         self.selectedCategory = selectedCategory
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -89,14 +81,40 @@ final class CategoryViewController: UIViewController {
         setPlaceholderImage()
     }
     
-    private func setPlaceholderImage() {
-        let trackerCategories = trackerCategoryDataProvider?.fetchCategories()
-        let isEmpty = trackerCategories?.isEmpty ?? true
-        placeholderImageView.isHidden = !isEmpty
-        placeholderLabel.isHidden = !isEmpty
+    private func bind() {
+        viewModel.categoryCreated = {[weak self] insertedIndexPaths in
+            guard let self = self else {return}
+            tableView.insertRows(at: insertedIndexPaths, with: .automatic)
+            setPlaceholderImage()
+        }
+        
+        viewModel.categoryUpdated = {[weak self] updatedIndexPaths in
+            guard let self = self else {return}
+            tableView.reloadRows(at: updatedIndexPaths, with: .automatic)
+            setPlaceholderImage()
+        }
+        
+        viewModel.categoryDeleted = {[weak self] deletedIndexPaths in
+            guard let self = self else {return}
+            tableView.deleteRows(at: deletedIndexPaths, with: .automatic)
+            setPlaceholderImage()
+        }
+        
+        viewModel.onErrorStateChanged = {[weak self] errorMessage in
+            guard let self = self else {return}
+            presentAlertController( message: errorMessage)
+            setPlaceholderImage()
+        }
     }
     
-    private func presentAlertController(with title: String, message: String) {
+    private func setPlaceholderImage() {
+        let trackerCategories = viewModel.fetchCategories()
+        let isEmpty = trackerCategories?.isEmpty
+        placeholderImageView.isHidden = !(isEmpty ?? true)
+        placeholderLabel.isHidden = !(isEmpty ?? true)
+    }
+    
+    private func presentAlertController(message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "ОК", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -111,13 +129,8 @@ final class CategoryViewController: UIViewController {
 }
 
 extension CategoryViewController: UITableViewDataSource {
-    func numberOfRowsInSection(in tableView: UITableView) -> Int {
-        return trackerCategoryDataProvider?.numberOfSections ?? 0
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        setPlaceholderImage()
-        return trackerCategoryDataProvider?.numberOfRowsInSection(section) ?? 0
+        return viewModel.numberOfRowsInSection(section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -125,7 +138,9 @@ extension CategoryViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        guard let trackerCategory = trackerCategoryDataProvider?.object(at: indexPath) else { return UITableViewCell()}
+        guard let trackerCategory = viewModel.editCategory(at: indexPath) else {
+            return UITableViewCell()
+        }
         cell.textLabel?.text = trackerCategory.title
         
         if selectedCategory != nil && cell.textLabel?.text == selectedCategory?.title {
@@ -135,7 +150,7 @@ extension CategoryViewController: UITableViewDataSource {
         }
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
@@ -143,36 +158,31 @@ extension CategoryViewController: UITableViewDataSource {
 
 extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let trackerCategory = trackerCategoryDataProvider?.object(at: indexPath) else { return }
-        selectedCategory = trackerCategory
+        selectedCategory = viewModel.editCategory(at: indexPath)
         delegate?.didSelect(category: selectedCategory)
         
         tableView.reloadData()
+        
         self.dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard indexPath.count > 0 else {return nil}
         
-        let category = trackerCategoryDataProvider?.object(at: indexPath)
-        let title = category?.title ?? ""
+        let trackerCategory = viewModel.editCategory(at: indexPath)
         
         return UIContextMenuConfiguration(actionProvider: {actions in
             return UIMenu(
                 children: [
                     UIAction(title: "Редактировать") {_ in
-                        let addCategoryViewController = AddCategoryViewController(delegate: self, category: category, isEditingCategory: true)
+                        let addCategoryViewController = AddCategoryViewController(delegate: self, category: trackerCategory, isEditingCategory: true)
                         self.present(addCategoryViewController, animated: true)
                     },
                     UIAction(title: "Удалить", attributes: .destructive) {_ in
                         let alertController = UIAlertController(title: "", message: "Эта категория точно не нужна?", preferredStyle: .actionSheet)
                         
                         let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
-                            do {
-                                try self.trackerCategoryDataProvider?.deleteCategory(with: title)
-                            } catch {
-                                print("Failed to delete category")
-                            }
+                            self.viewModel.deleteCategory(at: indexPath)
                         }
                         
                         let cancelAction = UIAlertAction(title: "Отменить", style: .cancel)
@@ -189,34 +199,11 @@ extension CategoryViewController: UITableViewDelegate {
 
 extension CategoryViewController: AddCategoryViewControllerDelegate {
     func update(_ category: TrackerCategory, with newTitle: String) {
-        do {
-            try trackerCategoryDataProvider?.updateCategory(category, with: newTitle)
-        } catch {
-            presentAlertController(with: "Ошибка", message: "Не удалось удалить категорию")
-        }
+        viewModel.updateCategory(category, with: newTitle)
     }
     
     func add(category: TrackerCategory) {
-        do {
-            try trackerCategoryDataProvider?.createCategory(category)
-        } catch {
-            presentAlertController(with: "Ошибка", message: "Не удалось создать категорию")
-        }
-        
-    }
-}
-
-extension CategoryViewController: TrackerCategoryDataProviderDelegate {
-    func didUpdate(_ update: TrackerCategoryStoreUpdate) {
-        tableView.performBatchUpdates {
-            let insertedIndexPaths = update.insertedIndexes.map {IndexPath(row: $0, section: 0)}
-            let deletedIndexes = update.deletedIndexes.map {IndexPath(row: $0, section: 0)}
-            let updatedIndexes = update.updatedIndexes.map {IndexPath(row: $0, section: 0)}
-            
-            self.tableView.insertRows(at: insertedIndexPaths, with: .automatic)
-            self.tableView.deleteRows(at: deletedIndexes, with: .automatic)
-            self.tableView.reloadRows(at: updatedIndexes, with: .automatic)
-        }
+        viewModel.createCategory(category)
     }
 }
 
